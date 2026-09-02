@@ -1,8 +1,55 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
 
+FROM eclipse-temurin:21-jdk AS builder
+WORKDIR /app
+COPY ./src/ad/ ./
+COPY ./pb/ ./proto
+RUN chmod +x ./gradlew
+RUN ./gradlew installDist -PprotoSourceDir=./proto
 
-FROM --platform=${BUILDPLATFORM} docker.io/library/eclipse-temurin:24.0.2_12-jdk@sha256:7493205ffe6caa8074fa8a06a276bb1c5ac41d3dd0fd43a0db66d7f776e80b3e AS builder
+FROM eclipse-temurin:21-jre AS runtime
+WORKDIR /app
+
+
+COPY --from=builder /app/build/install/opentelemetry-demo-ad/ ./
+
+EXPOSE ${AD_PORT}
+EXPOSE ${AD_PROMETHEUS_PORT}
+ENTRYPOINT [ "./build/install/opentelemetry-demo-ad/bin/Ad" ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+''' FROM --platform=${BUILDPLATFORM} docker.io/library/eclipse-temurin:24.0.2_12-jdk@sha256:7493205ffe6caa8074fa8a06a276bb1c5ac41d3dd0fd43a0db66d7f776e80b3e AS builder
 WORKDIR /usr/src/app/
 
 COPY ./src/ad/gradlew* ./src/ad/settings.gradle* ./src/ad/build.gradle ./
@@ -31,3 +78,4 @@ ENV JAVA_TOOL_OPTIONS="-javaagent:/usr/src/app/opentelemetry-javaagent.jar -Xmx2
 EXPOSE ${AD_PORT}
 EXPOSE ${AD_PROMETHEUS_PORT}
 ENTRYPOINT [ "./build/install/opentelemetry-demo-ad/bin/Ad" ]
+'''
