@@ -1,0 +1,56 @@
+warning: in the working copy of 'src/accounting/Dockerfile', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/recommendation/Dockerfile', CRLF will be replaced by LF the next time Git touches it
+[1mdiff --git a/src/accounting/Dockerfile b/src/accounting/Dockerfile[m
+[1mindex 08f4ed93..cb4621ad 100644[m
+[1m--- a/src/accounting/Dockerfile[m
+[1m+++ b/src/accounting/Dockerfile[m
+[36m@@ -1,12 +1,10 @@[m
+[31m-FROM mcr.microsoft.com/dotnet/sdk:10.0 as build[m
+[32m+[m[32mFROM mcr.microsoft.com/dotnet/sdk:10.0 AS build[m
+ WORKDIR /app[m
+ COPY ./src/accounting/ ./[m
+ COPY ./pb/demo.proto ./src/protos/demo.proto[m
+ RUN dotnet publish -c Release -o /app/publish[m
+ [m
+ [m
+[31m-FROM mcr.microsoft.com/dotnet/aspnet:10.0 as publish[m
+[32m+[m[32mFROM mcr.microsoft.com/dotnet/aspnet:10.0 AS publish[m
+ WORKDIR /app[m
+ COPY --from=build /app/publish/ ./[m
+[31m-[m
+[31m-ENTRYPOINT ["./Accounting"][m
+\ No newline at end of file[m
+[1mdiff --git a/src/recommendation/Dockerfile b/src/recommendation/Dockerfile[m
+[1mindex 94655fb4..994433b3 100644[m
+[1m--- a/src/recommendation/Dockerfile[m
+[1m+++ b/src/recommendation/Dockerfile[m
+[36m@@ -4,7 +4,7 @@[m
+ FROM docker.io/library/python:3.14.7-slim-bookworm AS builder[m
+ WORKDIR /app[m
+ [m
+[31m-COPY requirements.txt ./requirements.txt[m
+[32m+[m[32mCOPY src/recommendation/requirements.txt requirements.txt[m
+ [m
+ RUN python -m venv /opt/venv \[m
+ 	&& /opt/venv/bin/pip install --no-cache-dir --require-hashes -r requirements.txt[m
+[36m@@ -14,6 +14,6 @@[m [mWORKDIR /app[m
+ ENV PATH="/opt/venv/bin:$PATH"[m
+ [m
+ COPY --from=builder /opt/venv /opt/venv[m
+[31m-COPY *.py ./[m
+[32m+[m[32mCOPY src/recommendation/*.py ./[m
+ [m
+ ENTRYPOINT ["python", "recommendation_server.py"][m
+\ No newline at end of file[m
+warning: in the working copy of 'src/ad/Dockerfile', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/ad/README.md', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/currency/Dockerfile', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/frontend/README.md', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/load-generator/README.md', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/shipping/README.md', CRLF will be replaced by LF the next time Git touches it
+src/ad/Dockerfile
+src/ad/README.md
+src/currency/Dockerfile
+src/frontend/README.md
+src/load-generator/README.md
+src/shipping/README.md

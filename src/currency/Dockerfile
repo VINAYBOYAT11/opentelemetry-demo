@@ -21,7 +21,7 @@ RUN apk update && \
 
 FROM base AS builder
 
-RUN apk add git cmake make g++ linux-headers
+RUN apk add --no-cache git cmake make g++ linux-headers
 
 ARG OPENTELEMETRY_CPP_VERSION
 

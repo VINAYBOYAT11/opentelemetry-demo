@@ -37,8 +37,11 @@ If you need to upgrade the version of gradle then run
 From the root of `opentelemetry-demo`, run:
 
 ```sh
-docker build --file ./src/ad/Dockerfile ./
+docker build -f src/ad/Dockerfile .
 ```
+
+The equivalent Compose command is `docker compose build ad`. The image runs
+the service on port `8082` and Prometheus metrics on port `9465` by default.
 
 ## Custom metrics: bridging Prometheus to OpenTelemetry
 
@@ -61,7 +64,7 @@ exporters, or legacy services) and want to ingest those metrics into an
 OpenTelemetry-native pipeline without rewriting everything up front. The
 Collector's `prometheus` receiver is the bridge that makes this possible.
 
-**Recommendation**: this is a *transitional* pattern. Prefer the
+**Recommendation**: this is a _transitional_ pattern. Prefer the
 OpenTelemetry SDK for new custom metrics, and migrate existing
 Prometheus-client metrics to it - incremental migration as you touch
 the surrounding code has proven successful in practice, but a focused

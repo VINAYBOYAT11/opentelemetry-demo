@@ -1,5 +1,15 @@
 # Load Generator
 
+## Docker Build
+
+Build from the repository root. The image compiles the local xk6 OpenTelemetry
+extension and runs it with the browser-enabled k6 runtime:
+
+```sh
+docker build -f src/load-generator/Dockerfile .
+docker compose build load-generator
+```
+
 The load generator creates simulated traffic to the demo using
 [k6](https://k6.io/).
 
@@ -26,36 +36,36 @@ vars in `compose.yaml`.
 Each `httpScenario` iteration picks one task at random, weighted so browsing
 dominates over checkout:
 
-| Task                  | Weight |
-| --------------------- | -----: |
-| `index`               |      1 |
-| `browseProduct`       |     10 |
-| `getRecommendations`  |      3 |
-| `getAds`              |      3 |
-| `viewCart`            |      3 |
-| `addToCart`           |      2 |
-| `checkout`            |      1 |
-| `checkoutMulti`       |      1 |
-| `floodHome`           |      5 |
+| Task                 | Weight |
+| -------------------- | -----: |
+| `index`              |      1 |
+| `browseProduct`      |     10 |
+| `getRecommendations` |      3 |
+| `getAds`             |      3 |
+| `viewCart`           |      3 |
+| `addToCart`          |      2 |
+| `checkout`           |      1 |
+| `checkoutMulti`      |      1 |
+| `floodHome`          |      5 |
 
 ## Controlling traffic and concurrency via feature flags
 
-* `loadGeneratorTraffic` - pauses all synthetic traffic (both scenarios) when
+- `loadGeneratorTraffic` - pauses all synthetic traffic (both scenarios) when
   turned off, checked every iteration with no restart required.
-* `loadGeneratorVUs` - sets the number of concurrent virtual users the HTTP
+- `loadGeneratorVUs` - sets the number of concurrent virtual users the HTTP
   scenario runs. k6 v2's `constant-vus` executor can't resize its VU pool at
   runtime - it dropped the externally-controlled executor, and its REST API
   now rejects live VU changes outright - so
   [`entrypoint.sh`](./entrypoint.sh) polls flagd and restarts k6 with the new
   VU count only when this flag's value actually changes, rather than on a
   fixed timer.
-`entrypoint.sh` passes the VU count to k6 through the `LOAD_GENERATOR_VUS`
-env var, which `script.js` reads directly via `__ENV` to set the HTTP
-scenario's `vus`. It is deliberately not named `K6_VUS`: a `K6_VUS` env var
-(or `--vus` flag) makes k6 discard the script's `scenarios` config entirely in
-favor of a single implicit scenario, the same way `K6_DURATION`/
-`K6_ITERATIONS`/`K6_STAGES` do - so none of those reserved names should ever
-be set as a container env var here.
+  `entrypoint.sh` passes the VU count to k6 through the `LOAD_GENERATOR_VUS`
+  env var, which `script.js` reads directly via `__ENV` to set the HTTP
+  scenario's `vus`. It is deliberately not named `K6_VUS`: a `K6_VUS` env var
+  (or `--vus` flag) makes k6 discard the script's `scenarios` config entirely in
+  favor of a single implicit scenario, the same way `K6_DURATION`/
+  `K6_ITERATIONS`/`K6_STAGES` do - so none of those reserved names should ever
+  be set as a container env var here.
 
 The browser scenario runs a single headless browser session alongside the HTTP
 traffic, so it always runs one browser VU. It is opt-in via `K6_BROWSER_ENABLED`
