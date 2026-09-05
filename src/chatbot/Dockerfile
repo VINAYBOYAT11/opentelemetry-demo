@@ -1,23 +1,15 @@
-# Copyright The OpenTelemetry Authors
-# SPDX-License-Identifier: Apache-2.0
-
-FROM python:3.14-slim@sha256:ce40764625a4ff50df3548277632e7f96c4e77fe75fa848aae9885476e7df5a4
-
+FROM python:3.14-slim AS build
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
-WORKDIR /app
+WORKDIR /usr/src/app
+COPY ./src/chatbot/requirements.txt .
+COPY ./src/shared/tools.py ./src/shared/tools.py
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+RUN cd src/chatbot
+ENTRYPOINT ["python", "src/chatbot/run.py"]
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY src/chatbot/requirements.txt .
-
-RUN pip install --no-cache-dir --require-hashes -r requirements.txt
-
-COPY src/chatbot/src src
-COPY src/chatbot/run.py .
 
 EXPOSE ${CHATBOT_PORT}
+EXPOSE 7860
 
-CMD ["python", "run.py"]
