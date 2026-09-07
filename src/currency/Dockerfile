@@ -1,58 +1,74 @@
-# Copyright The OpenTelemetry Authors
-# SPDX-License-Identifier: Apache-2.0
-# Copyright 2023 The OpenTelemetry Authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Use a C++ development image to compile the currency service.
+FROM mcr.microsoft.com/devcontainers/cpp:latest AS build
 
-FROM docker.io/library/alpine:3.24.1@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b AS base
+# Compose provides the OpenTelemetry C++ version through this build argument.
+ARG OPENTELEMETRY_CPP_VERSION=1.27.0
 
-RUN apk update && \
-    apk add grpc-dev protobuf-dev
+# Install the compiler, CMake, and libraries needed by the C++ project.
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends \
+		build-essential \
+		cmake \
+		git \
+		libgrpc++-dev \
+		libprotobuf-dev \
+		protobuf-compiler \
+		protobuf-compiler-grpc \
+		libcurl4-openssl-dev \
+		libssl-dev \
+		libre2-dev \
+		zlib1g-dev \
+		nlohmann-json3-dev \
+	&& rm -rf /var/lib/apt/lists/*
 
-FROM base AS builder
+# Build OpenTelemetry C++ so the currency service can find its CMake package.
+RUN git clone --depth 1 --branch "v${OPENTELEMETRY_CPP_VERSION}" \
+		https://github.com/open-telemetry/opentelemetry-cpp.git /tmp/opentelemetry-cpp \
+	&& cmake -S /tmp/opentelemetry-cpp -B /tmp/opentelemetry-cpp/build \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DBUILD_TESTING=OFF \
+		-DWITH_EXAMPLES=OFF \
+		-DWITH_OTLP_GRPC=ON \
+		-DWITH_OTLP_HTTP=ON \
+	&& cmake --build /tmp/opentelemetry-cpp/build --parallel \
+	&& cmake --install /tmp/opentelemetry-cpp/build \
+	&& rm -rf /tmp/opentelemetry-cpp
 
-RUN apk add --no-cache git cmake make g++ linux-headers
+WORKDIR /app
 
-ARG OPENTELEMETRY_CPP_VERSION
+# The build context is the repository root, so copy only this service's files.
+COPY src/currency/ ./
 
-RUN git clone --depth 1 --branch v${OPENTELEMETRY_CPP_VERSION} https://github.com/open-telemetry/opentelemetry-cpp \
-    && cd opentelemetry-cpp/ \
-    && mkdir build \
-    && cd build \
-    && cmake .. -DCMAKE_CXX_STANDARD=17 -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-          -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF \
-          -DWITH_EXAMPLES=OFF -DWITH_OTLP_GRPC=ON -DWITH_ABSEIL=ON \
-    && make -j$(nproc || sysctl -n hw.ncpu || echo 1) install && cd ../..
+# Configure the project with CMake, then compile the currency executable.
+RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+	&& cmake --build build --parallel
 
-WORKDIR /currency
+# Use a smaller image for running the already-built service.
+FROM ubuntu:24.04
 
-COPY ./src/currency/build/ build/
-COPY ./src/currency/proto/ proto/
-COPY ./src/currency/src/ src/
+# Install the service's runtime libraries and netcat for Compose's healthcheck.
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends \
+		libgrpc++1.51 \
+		libprotobuf32 \
+		libcurl4 \
+		libre2-10 \
+		netcat-openbsd \
+	&& rm -rf /var/lib/apt/lists/*
 
-COPY ./src/currency/genproto/CMakeLists.txt genproto/CMakeLists.txt
-COPY ./src/currency/CMakeLists.txt CMakeLists.txt
+# Copy the OpenTelemetry shared libraries installed during the build stage.
+COPY --from=build /usr/local/lib/ /usr/local/lib/
 
-COPY ./pb/demo.proto proto/demo.proto
+# Copy the compiled service from the build stage into the runtime image.
+COPY --from=build /app/build/currency /usr/local/bin/currency
 
-RUN mkdir -p build && cd build \
-    && cmake .. \
-    && make -j$(nproc || sysctl -n hw.ncpu || echo 1) install
+# Refresh the dynamic linker cache after adding OpenTelemetry libraries.
+RUN ldconfig
 
-FROM base AS release
+# Compose configures the service to listen on port 7001.
+EXPOSE 7001
 
-COPY --from=builder /usr/local /usr/local
+# Start the service using the port supplied by Compose.
+ENTRYPOINT ["/bin/sh", "-c", "exec /usr/local/bin/currency \"${CURRENCY_PORT:-7001}\""]
 
-EXPOSE ${CURRENCY_PORT}
 
-ENTRYPOINT ["sh", "-c", "./usr/local/bin/currency ${CURRENCY_PORT}"]

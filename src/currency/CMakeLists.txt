@@ -1,5 +1,6 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
+#dependencies
 
 cmake_minimum_required(VERSION 3.26)
 project(currency)
