@@ -1,27 +1,21 @@
-# Copyright The OpenTelemetry Authors
-# SPDX-License-Identifier: Apache-2.0
+FROM ruby:3.4 AS builder
+
+WORKDIR /app
+
+COPY ./src/email/. ./
+#fix for google-protobuf gem issue on linux
+RUN bundle lock --add-platform x86_64-linux
+RUN bundle install
+
+FROM ruby:3.4-slim AS runtime
+
+WORKDIR /app
+
+COPY --from=builder ./usr/local/bundle/ /usr/local/bundle/
+COPY --from=builder ./app/ ./
 
 
-FROM docker.io/library/ruby:4.0.5-alpine3.22@sha256:fae3127404cb61d6897d7eed08e65ec7ccc96ba0542dc7c44712efa9b2ef78f0 AS builder
 
-COPY ./src/email/Gemfile Gemfile
-COPY ./src/email/Gemfile.lock Gemfile.lock
+CMD ["bundle", "exec", "email_server.rb"]
 
-RUN apk update && \
-    apk add make gcc musl-dev gcompat && \
-    bundle install
-
-FROM docker.io/library/ruby:4.0.5-alpine3.22@sha256:fae3127404cb61d6897d7eed08e65ec7ccc96ba0542dc7c44712efa9b2ef78f0
-
-COPY --from=builder /usr/local/bundle/ /usr/local/bundle/
-
-WORKDIR /email_server
-
-COPY ./src/email/views/ views/
-
-COPY ./src/email/Gemfile Gemfile
-COPY ./src/email/Gemfile.lock Gemfile.lock
-COPY ./src/email/email_server.rb email_server.rb
-
-EXPOSE ${EMAIL_PORT}
-ENTRYPOINT ["bundle", "exec", "ruby", "email_server.rb"]
+EXPOSE 6060

@@ -1,6 +1,6 @@
+#!/usr/bin/env ruby
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
-
 require "ostruct"
 require "pony"
 require "sinatra"
