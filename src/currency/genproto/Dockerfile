@@ -14,18 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM docker.io/library/alpine:3.24.1@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b AS builder
-
+FROM docker.io/library/alpine:3.24.1 AS builder
 RUN apk update && \
     apk add git cmake make g++ grpc-dev protobuf-dev linux-headers
 
 WORKDIR /currency
-
 COPY ./src/currency/genproto/CMakeLists.txt genproto/CMakeLists.txt
 COPY ./src/currency/proto/ proto/
-
 COPY ./pb/demo.proto proto/demo.proto
-
 RUN mkdir -p build && cd build \
     && cmake ../genproto \
     && make -j$(nproc || sysctl -n hw.ncpu || echo 1) demo-proto

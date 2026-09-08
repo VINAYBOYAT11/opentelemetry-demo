@@ -1,13 +1,13 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
 
-FROM docker.io/library/node:25.9.0-slim@sha256:81db02c4b671288a03915da9534dbd54f96d0e7c24d80ccc54f5b36b2e684370 AS builder
+FROM docker.io/library/node:25.9.0-slim AS builder
 
 WORKDIR /app
 
+# Install everything needed to build the Next.js application.
 COPY ./src/frontend/package.json package.json
 COPY ./src/frontend/package-lock.json package-lock.json
-
 RUN npm ci
 
 COPY ./src/frontend/components/ components/
@@ -29,30 +29,22 @@ COPY ./src/frontend/tsconfig.json tsconfig.json
 
 RUN npm run build
 
-# -----------------------------------------------------------------------------
-
-FROM docker.io/library/node:25.9.0-slim@sha256:81db02c4b671288a03915da9534dbd54f96d0e7c24d80ccc54f5b36b2e684370 AS deps
-
+FROM docker.io/library/node:25.9.0-slim AS deps
 WORKDIR /app
 
+# Install only the packages needed at runtime.
 COPY ./src/frontend/package.json package.json
 COPY ./src/frontend/package-lock.json package-lock.json
-
 RUN npm ci --omit=dev
 
-# -----------------------------------------------------------------------------
-
-FROM gcr.io/distroless/nodejs24-debian13:nonroot@sha256:ffab599740d4aaa66029d02b9e6d3de4f622fefb7410081c5ef69c86430f364d
-
+FROM gcr.io/distroless/nodejs24-debian13:nonroot
 WORKDIR /app
 
+# Run the built frontend with a small non-root image.
 COPY --from=builder /app/.next/standalone/ ./
 COPY --from=builder /app/.next/static/ .next/static/
-
 COPY --from=deps /app/node_modules/ node_modules/
-
 COPY ./src/frontend/public/ public/
-
 COPY ./src/frontend/utils/telemetry/Instrumentation.js Instrumentation.js
 
 EXPOSE ${FRONTEND_PORT}

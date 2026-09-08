@@ -2,13 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-FROM apache/kafka:4.3.1@sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837
-
+FROM apache/kafka:4.3.1
 USER root
 ARG OTEL_JAVA_AGENT_VERSION
-
 USER appuser
-
 ADD --chown=appuser:appuser https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v$OTEL_JAVA_AGENT_VERSION/opentelemetry-javaagent.jar /tmp/opentelemetry-javaagent.jar
 
 ENV KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
