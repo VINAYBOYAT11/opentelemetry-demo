@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
+cmake_policy(SET CMP0057 NEW)
 project(currency)
 
 find_package(Protobuf REQUIRED)

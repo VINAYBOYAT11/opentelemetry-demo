@@ -19,7 +19,7 @@ services:
   # ******************
   # Accounting service
   accounting:
-    image: ${IMAGE_NAME}:${DEMO_VERSION}-accounting
+    image: vinay11/accounting:v1
     container_name: accounting
     build:
       context: ./
@@ -48,7 +48,7 @@ services:
 
   # AdService
   ad:
-    image: ${IMAGE_NAME}:${DEMO_VERSION}-ad
+    image: vinay11/ad:v1
     container_name: ad
     build:
       context: ./
@@ -84,7 +84,7 @@ services:
 
   # Cart service
   cart:
-    image: ${IMAGE_NAME}:${DEMO_VERSION}-cart
+    image: vinay11/cart:v1
     container_name: cart
     build:
       context: ./
@@ -119,7 +119,7 @@ services:
 
   # Checkout service
   checkout:
-    image: ${IMAGE_NAME}:${DEMO_VERSION}-checkout
+    image: vinay11/checkout:v1
     container_name: checkout
     build:
       context: ./
@@ -172,7 +172,7 @@ services:
 
   # Currency service
   currency:
-    image: ${IMAGE_NAME}:${DEMO_VERSION}-currency
+    image: vinay11/currency:v1
     container_name: currency
     build:
       context: ./
@@ -203,7 +203,7 @@ services:
 
   # Email service
   email:
-    image: ${IMAGE_NAME}:${DEMO_VERSION}-email
+    image: vinay11/email:v1
     container_name: email
     build:
       context: ./
@@ -233,7 +233,7 @@ services:
 
   # Fraud Detection service
   fraud-detection:
-    image: ${IMAGE_NAME}:${DEMO_VERSION}-fraud-detection
+    image: vinay11/fraud-detection:v1
     container_name: fraud-detection
     build:
       context: ./
@@ -266,7 +266,7 @@ services:
 
   # Frontend
   frontend:
-    image: ${IMAGE_NAME}:${DEMO_VERSION}-frontend
+    image: vinay11/frontend:v1
     container_name: frontend
     build:
       context: ./
@@ -327,7 +327,7 @@ services:
 
   # Frontend Proxy (Envoy)
   frontend-proxy:
-    image: ${IMAGE_NAME}:${DEMO_VERSION}-frontend-proxy
+    image: vinay11/frontend-proxy:v1
     container_name: frontend-proxy
     build:
       context: ./
@@ -350,6 +350,7 @@ services:
       - GRAFANA_PORT
       - GRAFANA_HOST
       - JAEGER_UI_PORT
+      - JAEGER_GRPC_PORT
       - JAEGER_HOST
       - OTEL_COLLECTOR_HOST
       - IMAGE_PROVIDER_HOST
@@ -380,7 +381,7 @@ services:
 
   # image-provider
   image-provider:
-    image: ${IMAGE_NAME}:${DEMO_VERSION}-image-provider
+    image: vinay11/image-provider:v1
     container_name: image-provider
     build:
       context: ./
@@ -407,7 +408,7 @@ services:
 
   # Load Generator
   load-generator:
-    image: ${IMAGE_NAME}:${DEMO_VERSION}-load-generator
+    image: vinay11/load-generator:v1
     container_name: load-generator
     build:
       context: ./
@@ -446,7 +447,7 @@ services:
 
   # Payment service
   payment:
-    image: ${IMAGE_NAME}:${DEMO_VERSION}-payment
+    image: vinay11/payment:v1
     container_name: payment
     build:
       context: ./
@@ -478,7 +479,7 @@ services:
 
   # Product Catalog service
   product-catalog:
-    image: ${IMAGE_NAME}:${DEMO_VERSION}-product-catalog
+    image: vinay11/product-catalog:v1
     container_name: product-catalog
     build:
       context: ./
@@ -513,7 +514,7 @@ services:
 
   # Quote service
   quote:
-    image: ${IMAGE_NAME}:${DEMO_VERSION}-quote
+    image: vinay11/quote:v1
     container_name: quote
     build:
       context: ./
@@ -543,7 +544,7 @@ services:
 
   # Recommendation service
   recommendation:
-    image: ${IMAGE_NAME}:${DEMO_VERSION}-recommendation
+    image: vinay11/recommendation:v1
     container_name: recommendation
     build:
       context: ./
@@ -553,7 +554,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 500M               # This is high to enable supporting the recommendationCache feature flag use case
+          memory: 500M # This is high to enable supporting the recommendationCache feature flag use case
     restart: unless-stopped
     ports:
       - "${RECOMMENDATION_PORT}"
@@ -579,7 +580,7 @@ services:
 
   # Shipping service
   shipping:
-    image: ${IMAGE_NAME}:${DEMO_VERSION}-shipping
+    image: vinay11/shipping:v1
     container_name: shipping
     build:
       context: ./
@@ -624,22 +625,17 @@ services:
       - GOMEMLIMIT=60MiB
       - OTEL_RESOURCE_ATTRIBUTES
       - OTEL_SERVICE_NAME=flagd
-    command: [
-      "start",
-      "--uri",
-      "file:./etc/flagd/demo.flagd.json"
-    ]
+    command: ["start", "--uri", "file:./etc/flagd/demo.flagd.json"]
     ports:
       - "${FLAGD_PORT}"
       - "${FLAGD_OFREP_PORT}"
     volumes:
       - ./src/flagd:/etc/flagd
-    logging:
-      *logging
+    logging: *logging
 
   # Flagd UI for configuring the feature flag service
   flagd-ui:
-    image: ${IMAGE_NAME}:${DEMO_VERSION}-flagd-ui
+    image: vinay11/flagd-ui:v1
     container_name: flagd-ui
     build:
       context: ./
@@ -671,7 +667,7 @@ services:
 
   # Kafka used by Checkout, Accounting, and Fraud Detection services
   kafka:
-    image: ${IMAGE_NAME}:${DEMO_VERSION}-kafka
+    image: vinay11/kafka:v1
     container_name: kafka
     build:
       context: ./
@@ -706,7 +702,7 @@ services:
 
   # Postgresql used by Accounting service
   postgresql:
-    image: ${IMAGE_NAME}:${DEMO_VERSION}-postgresql
+    image: vinay11/postgresql:v1
     container_name: postgresql
     build:
       context: ./
@@ -739,7 +735,6 @@ services:
     ports:
       - "${VALKEY_PORT}"
     logging: *logging
-
 
   # ********************
   # Telemetry Components
@@ -796,7 +791,11 @@ services:
         limits:
           memory: 200M
     restart: unless-stopped
-    command: [ "--config=/etc/otelcol-config.yml", "--config=/etc/otelcol-config-extras.yml" ]
+    command:
+      [
+        "--config=/etc/otelcol-config.yml",
+        "--config=/etc/otelcol-config-extras.yml",
+      ]
     user: 0:0
     volumes:
       - ${HOST_FILESYSTEM}:/hostfs:ro
@@ -852,6 +851,7 @@ services:
 
   # OpenSearch
   opensearch:
+    image: vinay11/opensearch:v1
     container_name: opensearch
     build:
       context: ./
