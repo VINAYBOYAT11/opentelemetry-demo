@@ -19,7 +19,7 @@ services:
   # ******************
   # Accounting service
   accounting:
-    image: vinay11/accounting:v1
+    image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:accounting-latest
     container_name: accounting
     build:
       context: ./
@@ -48,7 +48,7 @@ services:
 
   # AdService
   ad:
-    image: vinay11/ad:v1
+    image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:ad-latest
     container_name: ad
     build:
       context: ./
@@ -84,7 +84,7 @@ services:
 
   # Cart service
   cart:
-    image: vinay11/cart:v1
+    image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:cart-latest
     container_name: cart
     build:
       context: ./
@@ -119,7 +119,7 @@ services:
 
   # Checkout service
   checkout:
-    image: vinay11/checkout:v1
+    image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:checkout-latest
     container_name: checkout
     build:
       context: ./
@@ -172,7 +172,7 @@ services:
 
   # Currency service
   currency:
-    image: vinay11/currency:v1
+    image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:currency-latest
     container_name: currency
     build:
       context: ./
@@ -203,7 +203,7 @@ services:
 
   # Email service
   email:
-    image: vinay11/email:v1
+    image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:email-latest
     container_name: email
     build:
       context: ./
@@ -233,7 +233,7 @@ services:
 
   # Fraud Detection service
   fraud-detection:
-    image: vinay11/fraud-detection:v1
+    image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:fraud-detection-latest
     container_name: fraud-detection
     build:
       context: ./
@@ -266,7 +266,7 @@ services:
 
   # Frontend
   frontend:
-    image: vinay11/frontend:v1
+    image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:frontend-latest
     container_name: frontend
     build:
       context: ./
@@ -327,7 +327,7 @@ services:
 
   # Frontend Proxy (Envoy)
   frontend-proxy:
-    image: vinay11/frontend-proxy:v1
+    image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:frontend-proxy-latest
     container_name: frontend-proxy
     build:
       context: ./
@@ -381,7 +381,7 @@ services:
 
   # image-provider
   image-provider:
-    image: vinay11/image-provider:v1
+    image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:image-provider-latest
     container_name: image-provider
     build:
       context: ./
@@ -408,7 +408,7 @@ services:
 
   # Load Generator
   load-generator:
-    image: vinay11/load-generator:v1
+    image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:load-generator-latest
     container_name: load-generator
     build:
       context: ./
@@ -447,7 +447,7 @@ services:
 
   # Payment service
   payment:
-    image: vinay11/payment:v1
+    image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:payment-latest
     container_name: payment
     build:
       context: ./
@@ -479,7 +479,7 @@ services:
 
   # Product Catalog service
   product-catalog:
-    image: vinay11/product-catalog:v1
+    image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:product-catalog-latest
     container_name: product-catalog
     build:
       context: ./
@@ -514,7 +514,7 @@ services:
 
   # Quote service
   quote:
-    image: vinay11/quote:v1
+    image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:quote-latest
     container_name: quote
     build:
       context: ./
@@ -544,7 +544,7 @@ services:
 
   # Recommendation service
   recommendation:
-    image: vinay11/recommendation:v1
+    image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:recommendation-latest
     container_name: recommendation
     build:
       context: ./
@@ -580,7 +580,7 @@ services:
 
   # Shipping service
   shipping:
-    image: vinay11/shipping:v1
+    image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:shipping-latest
     container_name: shipping
     build:
       context: ./
@@ -635,7 +635,7 @@ services:
 
   # Flagd UI for configuring the feature flag service
   flagd-ui:
-    image: vinay11/flagd-ui:v1
+    image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:flagd-ui-latest
     container_name: flagd-ui
     build:
       context: ./
@@ -667,7 +667,7 @@ services:
 
   # Kafka used by Checkout, Accounting, and Fraud Detection services
   kafka:
-    image: vinay11/kafka:v1
+    image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:kafka-latest
     container_name: kafka
     build:
       context: ./
@@ -702,7 +702,7 @@ services:
 
   # Postgresql used by Accounting service
   postgresql:
-    image: vinay11/postgresql:v1
+    image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:postgresql-latest
     container_name: postgresql
     build:
       context: ./
@@ -851,7 +851,7 @@ services:
 
   # OpenSearch
   opensearch:
-    image: vinay11/opensearch:v1
+    image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:opensearch-latest
     container_name: opensearch
     build:
       context: ./

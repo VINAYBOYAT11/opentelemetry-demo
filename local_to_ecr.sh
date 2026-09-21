@@ -3,11 +3,10 @@
 # Define your target AWS ECR path
 AWS_BASE="public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev"
 
-# Loop through all local docker images cleanly
-for local_img in $(docker images --format "{{.Repository}}:{{.Tag}}"); do
+# Loop ONLY through your custom vinay11 application images
+for local_img in $(docker images --format "{{.Repository}}:{{.Tag}}" | grep "^vinay11/"); do
     
-    # Extract the service name (e.g., "frontend" from "vinay11/frontend:v1")
-    # This also cleanly handles names like "grafana/grafana" or "valkey/valkey"
+    # Extract the service name (e.g., "accounting" from "vinay11/accounting:v1")
     service_name=$(echo "$local_img" | awk -F'/' '{print $NF}' | cut -d':' -f1)
     
     # Build the final AWS destination tag
@@ -22,4 +21,4 @@ for local_img in $(docker images --format "{{.Repository}}:{{.Tag}}"); do
 done
 
 echo "--------------------------------------------------"
-echo "All images successfully processed!"
+echo "All vinay11 images successfully processed!"
