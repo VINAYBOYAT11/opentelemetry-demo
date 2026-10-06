@@ -35,6 +35,9 @@ composer.lock
 .dockerhub.env
 .ghcr.env
 
+# Terraform working directory and downloaded providers
+/eks/.terraform/
+
 src/frontend/cypress/videos
 src/frontend/cypress/screenshots
 src/shipping/target/

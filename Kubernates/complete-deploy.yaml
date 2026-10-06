@@ -387,7 +387,7 @@ metadata:
     app.kubernetes.io/part-of: opentelemetry-demo
 spec:
   replicas: 1
-  revisionHistoryLimit: 10
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       opentelemetry.io/name: opentelemetry-demo-accountingservice
@@ -414,7 +414,7 @@ spec:
               value: "opentelemetry-demo-otelcol"
             - name: OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
               value: cumulative
-            - name: KAFKA_SERVICE_ADDR
+            - name: KAFKA_ADDR
               value: "opentelemetry-demo-kafka:9092"
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: http://$(OTEL_COLLECTOR_NAME):4318
@@ -448,7 +448,7 @@ metadata:
     app.kubernetes.io/part-of: opentelemetry-demo
 spec:
   replicas: 1
-  revisionHistoryLimit: 10
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       opentelemetry.io/name: opentelemetry-demo-adservice
@@ -510,7 +510,7 @@ metadata:
     app.kubernetes.io/part-of: opentelemetry-demo
 spec:
   replicas: 1
-  revisionHistoryLimit: 10
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       opentelemetry.io/name: opentelemetry-demo-cartservice
@@ -582,7 +582,7 @@ metadata:
     app.kubernetes.io/part-of: opentelemetry-demo
 spec:
   replicas: 1
-  revisionHistoryLimit: 10
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       opentelemetry.io/name: opentelemetry-demo-checkoutservice
@@ -612,21 +612,21 @@ spec:
               value: "opentelemetry-demo-otelcol"
             - name: OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
               value: cumulative
-            - name: CHECKOUT_SERVICE_PORT
+            - name: CHECKOUT_PORT
               value: "8080"
-            - name: CART_SERVICE_ADDR
+            - name: CART_ADDR
               value: "opentelemetry-demo-cartservice:8080"
-            - name: CURRENCY_SERVICE_ADDR
+            - name: CURRENCY_ADDR
               value: "opentelemetry-demo-currencyservice:8080"
-            - name: EMAIL_SERVICE_ADDR
+            - name: EMAIL_ADDR
               value: http://opentelemetry-demo-emailservice:8080
-            - name: PAYMENT_SERVICE_ADDR
+            - name: PAYMENT_ADDR
               value: "opentelemetry-demo-paymentservice:8080"
-            - name: PRODUCT_CATALOG_SERVICE_ADDR
+            - name: PRODUCT_CATALOG_ADDR
               value: "opentelemetry-demo-productcatalogservice:8080"
-            - name: SHIPPING_SERVICE_ADDR
+            - name: SHIPPING_ADDR
               value: "opentelemetry-demo-shippingservice:8080"
-            - name: KAFKA_SERVICE_ADDR
+            - name: KAFKA_ADDR
               value: "opentelemetry-demo-kafka:9092"
             - name: FLAGD_HOST
               value: "opentelemetry-demo-flagd"
@@ -664,7 +664,7 @@ metadata:
     app.kubernetes.io/part-of: opentelemetry-demo
 spec:
   replicas: 1
-  revisionHistoryLimit: 10
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       opentelemetry.io/name: opentelemetry-demo-currencyservice
@@ -694,7 +694,7 @@ spec:
               value: "opentelemetry-demo-otelcol"
             - name: OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
               value: cumulative
-            - name: CURRENCY_SERVICE_PORT
+            - name: CURRENCY_PORT
               value: "8080"
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: http://$(OTEL_COLLECTOR_NAME):4317
@@ -722,7 +722,7 @@ metadata:
     app.kubernetes.io/part-of: opentelemetry-demo
 spec:
   replicas: 1
-  revisionHistoryLimit: 10
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       opentelemetry.io/name: opentelemetry-demo-emailservice
@@ -780,7 +780,7 @@ metadata:
     app.kubernetes.io/part-of: opentelemetry-demo
 spec:
   replicas: 1
-  revisionHistoryLimit: 10
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       opentelemetry.io/name: opentelemetry-demo-flagd
@@ -888,7 +888,7 @@ metadata:
     app.kubernetes.io/part-of: opentelemetry-demo
 spec:
   replicas: 1
-  revisionHistoryLimit: 10
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       opentelemetry.io/name: opentelemetry-demo-frauddetectionservice
@@ -915,7 +915,7 @@ spec:
               value: "opentelemetry-demo-otelcol"
             - name: OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
               value: cumulative
-            - name: KAFKA_SERVICE_ADDR
+            - name: KAFKA_ADDR
               value: "opentelemetry-demo-kafka:9092"
             - name: FLAGD_HOST
               value: "opentelemetry-demo-flagd"
@@ -953,7 +953,7 @@ metadata:
     app.kubernetes.io/part-of: opentelemetry-demo
 spec:
   replicas: 1
-  revisionHistoryLimit: 10
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       opentelemetry.io/name: opentelemetry-demo-frontend
@@ -995,11 +995,11 @@ spec:
               value: "opentelemetry-demo-checkoutservice:8080"
             - name: CURRENCY_SERVICE_ADDR
               value: "opentelemetry-demo-currencyservice:8080"
-            - name: PRODUCT_CATALOG_SERVICE_ADDR
+            - name: PRODUCT_CATALOG_ADDR
               value: "opentelemetry-demo-productcatalogservice:8080"
             - name: RECOMMENDATION_SERVICE_ADDR
               value: "opentelemetry-demo-recommendationservice:8080"
-            - name: SHIPPING_SERVICE_ADDR
+            - name: SHIPPING_ADDR
               value: "opentelemetry-demo-shippingservice:8080"
             - name: FLAGD_HOST
               value: "opentelemetry-demo-flagd"
@@ -1039,7 +1039,7 @@ metadata:
     app.kubernetes.io/part-of: opentelemetry-demo
 spec:
   replicas: 1
-  revisionHistoryLimit: 10
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       opentelemetry.io/name: opentelemetry-demo-frontendproxy
@@ -1083,17 +1083,17 @@ spec:
               value: "opentelemetry-demo-frontend"
             - name: FRONTEND_PORT
               value: "8080"
-            - name: GRAFANA_SERVICE_HOST
+            - name: GRAFANA_HOST
               value: "opentelemetry-demo-grafana"
-            - name: GRAFANA_SERVICE_PORT
+            - name: GRAFANA_PORT
               value: "80"
             - name: IMAGE_PROVIDER_HOST
               value: "opentelemetry-demo-imageprovider"
             - name: IMAGE_PROVIDER_PORT
               value: "8081"
-            - name: JAEGER_SERVICE_HOST
+            - name: JAEGER_HOST
               value: "opentelemetry-demo-jaeger-query"
-            - name: JAEGER_SERVICE_PORT
+            - name: JAEGER_GRPC_PORT
               value: "16686"
             - name: LOCUST_WEB_HOST
               value: "opentelemetry-demo-loadgenerator"
@@ -1131,7 +1131,7 @@ metadata:
     app.kubernetes.io/part-of: opentelemetry-demo
 spec:
   replicas: 1
-  revisionHistoryLimit: 10
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       opentelemetry.io/name: opentelemetry-demo-imageprovider
@@ -1189,7 +1189,7 @@ metadata:
     app.kubernetes.io/part-of: opentelemetry-demo
 spec:
   replicas: 1
-  revisionHistoryLimit: 10
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       opentelemetry.io/name: opentelemetry-demo-kafka
@@ -1253,7 +1253,7 @@ metadata:
     app.kubernetes.io/part-of: opentelemetry-demo
 spec:
   replicas: 1
-  revisionHistoryLimit: 10
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       opentelemetry.io/name: opentelemetry-demo-loadgenerator
@@ -1327,7 +1327,7 @@ metadata:
     app.kubernetes.io/part-of: opentelemetry-demo
 spec:
   replicas: 1
-  revisionHistoryLimit: 10
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       opentelemetry.io/name: opentelemetry-demo-paymentservice
@@ -1357,7 +1357,7 @@ spec:
               value: "opentelemetry-demo-otelcol"
             - name: OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
               value: cumulative
-            - name: PAYMENT_SERVICE_PORT
+            - name: PAYMENT_PORT
               value: "8080"
             - name: FLAGD_HOST
               value: "opentelemetry-demo-flagd"
@@ -1391,7 +1391,7 @@ metadata:
     app.kubernetes.io/part-of: opentelemetry-demo
 spec:
   replicas: 1
-  revisionHistoryLimit: 10
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       opentelemetry.io/name: opentelemetry-demo-productcatalogservice
@@ -1451,7 +1451,7 @@ metadata:
     app.kubernetes.io/part-of: opentelemetry-demo
 spec:
   replicas: 1
-  revisionHistoryLimit: 10
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       opentelemetry.io/name: opentelemetry-demo-quoteservice
@@ -1481,7 +1481,7 @@ spec:
               value: "opentelemetry-demo-otelcol"
             - name: OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
               value: cumulative
-            - name: QUOTE_SERVICE_PORT
+            - name: QUOTE_PORT
               value: "8080"
             - name: OTEL_PHP_AUTOLOAD_ENABLED
               value: "true"
@@ -1513,7 +1513,7 @@ metadata:
     app.kubernetes.io/part-of: opentelemetry-demo
 spec:
   replicas: 1
-  revisionHistoryLimit: 10
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       opentelemetry.io/name: opentelemetry-demo-recommendationservice
@@ -1545,7 +1545,7 @@ spec:
               value: cumulative
             - name: RECOMMENDATION_SERVICE_PORT
               value: "8080"
-            - name: PRODUCT_CATALOG_SERVICE_ADDR
+            - name: PRODUCT_CATALOG_ADDR
               value: "opentelemetry-demo-productcatalogservice:8080"
             - name: OTEL_PYTHON_LOG_CORRELATION
               value: "true"
@@ -1579,7 +1579,7 @@ metadata:
     app.kubernetes.io/part-of: opentelemetry-demo
 spec:
   replicas: 1
-  revisionHistoryLimit: 10
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       opentelemetry.io/name: opentelemetry-demo-shippingservice
@@ -1609,7 +1609,7 @@ spec:
               value: "opentelemetry-demo-otelcol"
             - name: OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
               value: cumulative
-            - name: SHIPPING_SERVICE_PORT
+            - name: SHIPPING_PORT
               value: "8080"
             - name: QUOTE_SERVICE_ADDR
               value: http://opentelemetry-demo-quoteservice:8080
@@ -1637,7 +1637,7 @@ metadata:
     app.kubernetes.io/part-of: opentelemetry-demo
 spec:
   replicas: 1
-  revisionHistoryLimit: 10
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       opentelemetry.io/name: opentelemetry-demo-valkey
