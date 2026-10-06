@@ -40,7 +40,7 @@ spec:
               value: "opentelemetry-demo-otelcol"
             - name: OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
               value: cumulative
-            - name: KAFKA_SERVICE_ADDR
+            - name: KAFKA_ADDR
               value: "opentelemetry-demo-kafka:9092"
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: http://$(OTEL_COLLECTOR_NAME):4318

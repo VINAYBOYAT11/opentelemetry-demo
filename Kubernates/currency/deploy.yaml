@@ -43,7 +43,7 @@ spec:
               value: "opentelemetry-demo-otelcol"
             - name: OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
               value: cumulative
-            - name: CURRENCY_SERVICE_PORT
+            - name: CURRENCY_PORT
               value: "8080"
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: http://$(OTEL_COLLECTOR_NAME):4317

@@ -43,7 +43,7 @@ spec:
               value: "opentelemetry-demo-otelcol"
             - name: OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
               value: cumulative
-            - name: QUOTE_SERVICE_PORT
+            - name: QUOTE_PORT
               value: "8080"
             - name: OTEL_PHP_AUTOLOAD_ENABLED
               value: "true"

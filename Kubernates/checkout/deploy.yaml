@@ -43,21 +43,21 @@ spec:
               value: "opentelemetry-demo-otelcol"
             - name: OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
               value: cumulative
-            - name: CHECKOUT_SERVICE_PORT
+            - name: CHECKOUT_PORT
               value: "8080"
-            - name: CART_SERVICE_ADDR
+            - name: CART_ADDR
               value: "opentelemetry-demo-cartservice:8080"
-            - name: CURRENCY_SERVICE_ADDR
+            - name: CURRENCY_ADDR
               value: "opentelemetry-demo-currencyservice:8080"
-            - name: EMAIL_SERVICE_ADDR
+            - name: EMAIL_ADDR
               value: http://opentelemetry-demo-emailservice:8080
-            - name: PAYMENT_SERVICE_ADDR
+            - name: PAYMENT_ADDR
               value: "opentelemetry-demo-paymentservice:8080"
-            - name: PRODUCT_CATALOG_SERVICE_ADDR
+            - name: PRODUCT_CATALOG_ADDR
               value: "opentelemetry-demo-productcatalogservice:8080"
-            - name: SHIPPING_SERVICE_ADDR
+            - name: SHIPPING_ADDR
               value: "opentelemetry-demo-shippingservice:8080"
-            - name: KAFKA_SERVICE_ADDR
+            - name: KAFKA_ADDR
               value: "opentelemetry-demo-kafka:9092"
             - name: FLAGD_HOST
               value: "opentelemetry-demo-flagd"

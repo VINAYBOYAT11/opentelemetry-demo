@@ -57,17 +57,17 @@ spec:
               value: "opentelemetry-demo-frontend"
             - name: FRONTEND_PORT
               value: "8080"
-            - name: GRAFANA_SERVICE_HOST
+            - name: GRAFANA_HOST
               value: "opentelemetry-demo-grafana"
-            - name: GRAFANA_SERVICE_PORT
+            - name: GRAFANA_PORT
               value: "80"
             - name: IMAGE_PROVIDER_HOST
               value: "opentelemetry-demo-imageprovider"
             - name: IMAGE_PROVIDER_PORT
               value: "8081"
-            - name: JAEGER_SERVICE_HOST
+            - name: JAEGER_HOST
               value: "opentelemetry-demo-jaeger-query"
-            - name: JAEGER_SERVICE_PORT
+            - name: JAEGER_GRPC_PORT
               value: "16686"
             - name: LOCUST_WEB_HOST
               value: "opentelemetry-demo-loadgenerator"
