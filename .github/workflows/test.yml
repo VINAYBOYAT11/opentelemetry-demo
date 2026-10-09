@@ -1,15 +1,17 @@
-name: Verify AWS OIDC
+
+name: Build and Push Test Image to ECR Public
 
 on:
   workflow_dispatch:
 
 permissions:
-  id-token: write
   contents: read
+  id-token: write
 
 jobs:
-  verify:
+  build-and-push:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Configure AWS credentials
@@ -19,5 +21,47 @@ jobs:
           aws-region: us-east-1
           allowed-account-ids: ${{ vars.AWS_ACCOUNT_ID }}
 
-      - name: Verify AWS identity
+      - name: Verify AWS account
         run: aws sts get-caller-identity
+
+      - name: Login to ECR Public
+        run: |
+          aws ecr-public get-login-password --region us-east-1 \
+            | docker login \
+                --username AWS \
+                --password-stdin public.ecr.aws
+
+      - name: Create a new Dockerfile
+        run: |
+          mkdir -p test-image
+
+          cat > test-image/Dockerfile <<'EOF'
+          FROM alpine:3.22
+          CMD ["sh", "-c", "echo Hello from my new ECR Public Docker image!"]
+          EOF
+
+      - name: Build the new image
+        run: |
+          docker build \
+            -t my-ecr-test:latest \
+            ./test-image
+
+      - name: Run the image locally
+        run: docker run --rm my-ecr-test:latest
+
+      - name: Tag image for ECR Public
+        run: |
+          IMAGE="public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev"
+          TAG="github-test-${GITHUB_SHA::7}"
+
+          docker tag my-ecr-test:latest "${IMAGE}:${TAG}"
+
+          echo "ECR_IMAGE=${IMAGE}" >> "$GITHUB_ENV"
+          echo "ECR_TAG=${TAG}" >> "$GITHUB_ENV"
+
+      - name: Push image to ECR Public
+        run: |
+          docker push "${ECR_IMAGE}:${ECR_TAG}"
+
+          echo "Successfully pushed:"
+          echo "${ECR_IMAGE}:${ECR_TAG}"
