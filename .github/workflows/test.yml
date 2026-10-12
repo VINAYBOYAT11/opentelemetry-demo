@@ -13,12 +13,15 @@ permissions:
 
 defaults:
   run:
-    working-directory: src/product-catalog
+    working-directory: .
 #-----------------------------------------------------------------------------------------
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/product-catalog
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -129,6 +132,7 @@ jobs:
         run: |
           docker build -t "${IMAGE}:product-catalog-${GITHUB_RUN_ID}" -f src/product-catalog/Dockerfile .
           docker push "${IMAGE}:product-catalog-${GITHUB_RUN_ID}"
+        working-directory: .
   updatek8s: # job 5
     needs: publish
     runs-on: ubuntu-latest
