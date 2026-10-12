@@ -91,7 +91,7 @@ jobs:
       contents: read
       id-token: write
     env:
-      AWS_REGION: us-west-2
+      AWS_REGION: us-east-1
       ECR_PUBLIC_ALIAS: ${{ vars.AWS_ECR_PUBLIC_ALIAS }}
       ECR_PUBLIC_REPOSITORY: ${{ vars.AWS_ECR_PUBLIC_REPOSITORY }}
     steps:
