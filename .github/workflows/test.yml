@@ -109,7 +109,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
-          aws-region: ${{ vars.AWS_REGION }} 
+          aws-region: ${{ env.AWS_REGION }} 
 # Testing aws is link correctly configured or not by running the aws sts get-caller-identity command, which returns details about the IAM identity whose credentials are used to call the operation.
       - name : test aws cli
         run: aws sts get-caller-identity
