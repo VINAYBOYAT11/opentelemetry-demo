@@ -28,7 +28,7 @@ spec:
       serviceAccountName: opentelemetry-demo
       containers:
         - name: productcatalogservice
-          image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:product-catalog-latest
+          image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:product-catalog-38260828697
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
