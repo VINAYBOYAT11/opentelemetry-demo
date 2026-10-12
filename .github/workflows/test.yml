@@ -1,67 +1,120 @@
+name: Product Catalog CI
 
-name: Build and Push Test Image to ECR Public
 
 on:
-  workflow_dispatch:
+  pull_request:
+    branches:
+      - Main-2
+  push:
+    branches:
+      - Main-2
 
 permissions:
   contents: read
-  id-token: write
+
+defaults:
+  run:
+    working-directory: src/product-catalog
+#-----------------------------------------------------------------------------------------
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-
     steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6.3.0
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go  v 1.22
+        uses: actions/setup-go@v2
+        with:
+          go-version-file: src/product-catalog/go.mod
+          cache-dependency-path: src/product-catalog/go.sum
+          go-version: 1.22
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Build
+        run: go build -o product-catalog-service .
+        # select the working directory and then build main.go file
+
+      - name: Run unit tests
+        run: go test ./...
+        # it will gonona run testcases deffine by the dev  and it will run all the testcases in the current directory and subdirectory
+        # job 1 done 
+
+
+  code-quality:   #job 2 
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+# golangci-lint is a fast code checker for the Go (Golang) programming language.
+#t looks for bugs, messy code, and performance issues.
+#t combines over a hundred of them into one single tool that runs incredibly fast.
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.62.2
+          working-directory: src/product-catalog
+
+  docker-build:    # job 3  
+    needs: build # requires the build job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+ 
+
+ # it required to set up docker buildx  to build and push multi-platform images with Docker. It is a CLI plugin that extends the docker command with the full support of the features provided by BuildKit builder toolkit.
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+# pull the docker image form ecr and  run the docker build it
+      - name: Build Docker image
+        run: docker build -t product-catalog-service:${GITHUB_SHA} -f src/product-catalog/Dockerfile .
+        working-directory: .
+  # ttry to build  docker imahge and run the docker image to check if it is running or not
+      - name: Smoke-test Docker image
+        run: |
+          docker run -d --name product-catalog-service \
+            -p 8088:8088 \
+            product-catalog-service:${GITHUB_SHA}
+          sleep 5
+          docker inspect --format '{{.State.Status}}' product-catalog-service | grep -q running
+          docker rm -f product-catalog-service
+        working-directory: .
+
+  publish: # docker image to ecr public
+    if: github.event_name == 'push'
+    needs: docker-build
+    runs-on: ubuntu-latest 
+
+    #AS PER THE DCCUMENAITON, THE PERMISSION IS REQUIRED TO ACCESS THE CONTENTS OF THE REPOSITORY AND TO GENERATE AN ID TOKEN FOR AUTHENTICATION.
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AWS_REGION: us-west-2
+      ECR_PUBLIC_ALIAS: ${{ vars.AWS_ECR_PUBLIC_ALIAS }}
+      ECR_PUBLIC_REPOSITORY: ${{ vars.AWS_ECR_PUBLIC_REPOSITORY }}
+    steps:  
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+# so i have configure d the aws credentials using oidc , github will send aws a token it vailedtes then itreturns the temporary credential , THIS WAY WE CAN AVOID STORING AWS CREDENTIALS IN GITHUB SECRETS.
+      - name: configured using oidc  
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
-          aws-region: us-east-1
-          allowed-account-ids: ${{ vars.AWS_ACCOUNT_ID }}
-
-      - name: Verify AWS account
+          aws-region: ${{ vars.AWS_REGION }} 
+           
+      - name : test aws cli
         run: aws sts get-caller-identity
 
-      - name: Login to ECR Public
+      - name: Validate ECR Public configuration
         run: |
-          aws ecr-public get-login-password --region us-east-1 \
-            | docker login \
-                --username AWS \
-                --password-stdin public.ecr.aws
-
-      - name: Create a new Dockerfile
-        run: |
-          mkdir -p test-image
-
-          cat > test-image/Dockerfile <<'EOF'
-          FROM alpine:3.22
-          CMD ["sh", "-c", "echo Hello from my new ECR Public Docker image!"]
-          EOF
-
-      - name: Build the new image
-        run: |
-          docker build \
-            -t my-ecr-test:latest \
-            ./test-image
-
-      - name: Run the image locally
-        run: docker run --rm my-ecr-test:latest
-
-      - name: Tag image for ECR Public
-        run: |
-          IMAGE="public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev"
-          TAG="github-test-${GITHUB_SHA::7}"
-
-          docker tag my-ecr-test:latest "${IMAGE}:${TAG}"
-
-          echo "ECR_IMAGE=${IMAGE}" >> "$GITHUB_ENV"
-          echo "ECR_TAG=${TAG}" >> "$GITHUB_ENV"
-
-      - name: Push image to ECR Public
-        run: |
-          docker push "${ECR_IMAGE}:${ECR_TAG}"
-
-          echo "Successfully pushed:"
-          echo "${ECR_IMAGE}:${ECR_TAG}"
+          test -n "$ECR_PUBLIC_ALIAS"
+          test -n "$ECR_PUBLIC_REPOSITORY"
