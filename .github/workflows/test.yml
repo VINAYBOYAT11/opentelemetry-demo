@@ -129,17 +129,30 @@ jobs:
         run: |
           docker build -t "${IMAGE}:product-catalog-${GITHUB_RUN_ID}" -f src/product-catalog/Dockerfile .
           docker push "${IMAGE}:product-catalog-${GITHUB_RUN_ID}"
-      - name: update tag in kubernates
-        env:
-          IMAGE: public.ecr.aws/${{ vars.AWS_ECR_PUBLIC_ALIAS }}/${{ vars.AWS_ECR_PUBLIC_REPOSITORY }}
+  updatek8s: # job 5
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    defaults:
+      run:
+        working-directory: .
+    env:
+      IMAGE: public.ecr.aws/${{ vars.AWS_ECR_PUBLIC_ALIAS }}/${{ vars.AWS_ECR_PUBLIC_REPOSITORY }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Update Kubernetes deployment
         run: |
-          sed -i "s|image: .*|image: ${IMAGE}:product-catalog-${GITHUB_RUN_ID}|" src/product-catalog/k8s/deployment.yaml
-      # this is my imge public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:product-catalog-latest
-      #public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:product-catalog-latest
+          sed -i "s|image: .*|image: ${IMAGE}:product-catalog-${GITHUB_RUN_ID}|" Kubernates/productcatalog/deploy.yaml
       - name: commit and push the changes to kubernates deployment.yaml
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "vivan.boyat.9@gmail.com"
-          git add src/product-catalog/k8s/deployment.yaml
+          git add Kubernates/productcatalog/deploy.yaml
           git commit -m "[CI]  Update image tag in deployment.yaml"
           git push origin Main-2
+
+      # this is my imge public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:product-catalog-latest
+      #public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:product-catalog-latest
