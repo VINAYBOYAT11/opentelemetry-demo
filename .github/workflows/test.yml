@@ -109,12 +109,38 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
-          aws-region: ${{env.AWS_REGION}} 
-           
+          aws-region: ${{ vars.AWS_REGION }} 
+# Testing aws is link correctly configured or not by running the aws sts get-caller-identity command, which returns details about the IAM identity whose credentials are used to call the operation.
       - name : test aws cli
         run: aws sts get-caller-identity
 
       - name: Validate ECR Public configuration
-        run: |
+        run: | 
           test -n "$ECR_PUBLIC_ALIAS"
           test -n "$ECR_PUBLIC_REPOSITORY"
+
+      - name: Log in to ECR Public
+        run: |
+          aws ecr-public get-login-password --region "$AWS_REGION" \
+            | docker login --username AWS --password-stdin public.ecr.aws
+
+      - name: Build and push Docker image to ecr public
+        env:
+          IMAGE: public.ecr.aws/${{ vars.AWS_ECR_PUBLIC_ALIAS }}/${{ vars.AWS_ECR_PUBLIC_REPOSITORY }}
+        #public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev
+        
+        run: |
+          docker build -t "$IMAGE:product-catalog-${github.run_id}"  -f src/product-catalog/Dockerfile .
+          dokcer push "${{vars.AWS_ECR_PUBLIC_ALIAS}}/${{vars.AWS_ECR_PUBLIC_REPOSITORY}}:product-catalog-${github.run_id}"
+      - name : update tag in kubernates
+        run: |
+         sed -i 's/image: .*/image: public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:product-catalog-${github.run_id}/'  'src/product-catalog/k8s/deployment.yaml' 
+   # this is my imge public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:product-catalog-latest
+   #public.ecr.aws/f6a5u4d3/opentelematry/vinay-dev:product-catalog-latest
+      - name : commit and push the changes to kubernates deployment.yaml
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "vivan.boyat.9@gmail.com"
+          git add src/product-catalog/k8s/deployment.yaml
+          git commit -m "[CI]  Update image tag in deployment.yaml"
+          git push origin Main-2   
